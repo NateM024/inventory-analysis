@@ -3,3 +3,7 @@ pandas
 numpy
 seaborn
 matplotlib
+yfinance
+requests
+psycopg2
+sqlalchemy
