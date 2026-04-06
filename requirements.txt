@@ -7,3 +7,4 @@ yfinance
 requests
 psycopg2
 sqlalchemy
+ast
