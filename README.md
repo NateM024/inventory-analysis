@@ -2,8 +2,7 @@
 
 
 ## To-do:
-- Create Visualizations (4/14 - 4/24)
-- Develop Presentation (4/24 - 4/29)
+- Present Capstone (4/29)
 
 ## Done: 
 - Acquired Company List Data
@@ -14,3 +13,5 @@
 - Cleaned COGS Data
 - Cleaned Stock Data
 - Created database tables
+- Created Dashboard Visualizations
+- Put together a Presentation
