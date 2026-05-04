@@ -1,8 +1,5 @@
 notebook
 pandas
-numpy
-seaborn
-matplotlib
 yfinance
 requests
 psycopg2
