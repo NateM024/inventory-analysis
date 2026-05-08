@@ -13,39 +13,45 @@ The objective of this project was to acquire, explore, clean, and export data pe
 ### Data Acquisition
 This project acquires data from 3 different sources:
 
-1. **SP500.csv** - A csv file obtained from Kaggle contains information for each company in the S&P 500, including their ticker symbol, sector, sub-industry, and more. This file is included in the `/data folder`.
+1. **SP500.csv** - A csv file obtained from Kaggle contains information for each company in the S&P 500, including their ticker symbol, sector, sub-industry, and more. This file is kept in `SP500.csv/data`.
 
-2. **SEC EDGAR API** - An api used to retrieve data from company filings. For this project, we can obtain company's quarterly dates, inventory, cost of goods sold, and net sales for each company that lists this data by using the CIK from the SP500.csv. The collected and cleaned data is kept in `financial_data_v3.csv/data`.
+2. **SEC EDGAR API** - An api used to retrieve data from company filings. For this project, we can obtain company's quarterly dates, inventory, cost of goods sold, and net sales for each company that lists this data by using the CIK from the SP500.csv. The collected and cleaned data is kept in `financial_data_cleaned.csv/data`.
 
-3. **yfinance** - A Python library that uses Yahoo Finance's API to fetch historical stock market data. This project uses the company ticker from SP500.csv and the dates gathered from the SEC EDGAR API to get specific company stock prices at exact dates. The collected and cleaned data is kept in `stock_data.csv/data`.
+3. **yfinance** - A Python library that uses Yahoo Finance's API to fetch historical stock market data. This project uses the company ticker from SP500.csv and the dates gathered from the SEC EDGAR API to get specific company stock prices at exact dates. The collected and cleaned data is kept in `stock_data_cleaned.csv/data`.
 
 
 ### Data Exploration
 
-For the `SP500.csv`:
+For the SP500.csv:
 - Examine the beginning and end of the dataset
 - Look at the shape of the data (503, 7)
 - Check for nulls
 
 For the SEC EDGAR data:
-- 
+
+- View the shape of the data (109, 5)
+- Look at counts, frequencies, and uniqueness of values
 - Look at the first 5 rows of data
-- 
+- Check for nulls and duplicates
+
+For the yfinance data: 
+- Vuew  at the shape of the data (3221, 3)
+- Look at counts, frequencies, and uniqueness of values
+- Look at the first 5 rows of data
+- Check for nulls and duplicates
 
 ### Data Cleaning 
 
-From the data from the SP500.csv:
-- Changed a ticker symbol from BF.B to BF-B for it to work with yfinance
-- Removed the company with the K ticker symbol (delisted in yfinance)  
-
-From the retrieved SEC EDGAR API data: 
+For the financial data dataframe: 
 - Remove duplicate values and irrelavent information 
 - Create a separate date column
 - Changed the date values to a 'YYYY-MM-DD' pandas datetime format
 - Created an average inventory column
 - Added a column with for company names 
+- Changed a ticker symbol from BF.B to BF-B for it to work with yfinance
+- Removed the company with the K ticker symbol (delisted in yfinance)  
 
-From the data gathered via yfinance:
+For the stock data dataframe:
 - Removed null values
 - Changed the date values to a 'YYYY-MM-DD' pandas datetime format
 - Created a stock return column
@@ -54,7 +60,7 @@ From the data gathered via yfinance:
 ### Data Exporting
 
 1. Create an engine from the sqlalchemy library (note: start a postgres docker container first)
-2. Export the data to three different tables in the postgres database:
+2. Export the data to three different tables in the Postgres database:
 
 <div align="center">
 
@@ -69,9 +75,19 @@ From the data gathered via yfinance:
 4. Reconnect to the engine and verify the data exists in the database 
 
 ## Visualizations
-After the data is exported into a locally hosted Postgres database, it can easily be connected to a data visualization tool, such as Tableau or Power BI, to create insightful visualizations. For the specific questions for this project, `workbook.twb` includes the Tableau workbook structure of the  visualizations used to answer them.
+After the data is exported into the Postgres database, it can easily be connected to a data visualization tool, such as Tableau or Power BI, to create insightful visualizations. For the specific questions for this project, `workbook.twb` includes the Tableau workbook structure of the  visualizations used to answer them.
 
-## Main Results
+## Key Project Takeways
+
+1. How do inventory metrics vary across sectors and among companies within those sectors?
+
+    Inventory metrics show clear systematic differences across sectors​. For example, companies in sectors like industrials and energy held billions of dollars of inventory on average while other sectors like financials held less than even one billion. This reflects the strong industry effects and reflects structural factors (like production cycles) across sectors.
+
+    Within sectors, there exists substantial variation in inventory metrics at the company-level. Within sectors, companies with similar inventory products have noticably different inventory metrics, noteably inventory turnover and inventory-to-sales. Comparing these metrics among companies or to the sector average can help us see which companies are under/overperforming on these metrics. 
+​
+2. Is there a relationship between these inventory metrics and stock performance?​
+
+    There does not appear to be a relationship between inventory metrics and stock performance. Plotting future stock returns with inventory turnover and inventory-to-sales did not result in meaningful R<sup>2</sup> or significant p-values, except for one exception. When filtering specifically for the materials sector and plotting future returns with inventory turnover, the linear regression line produced a p-value of 0.03,  meaning that relationship is statistically significant. However, even in this case, the R<sup>2</sup> was still small, meaning that inventory turnover can not explain the variance in future stock returns. 
 
 ## How to Run
 
@@ -91,8 +107,8 @@ Either:
 
 - b) Directly load in all the data by creating and running a Python cell that includes: 
 ```python
-clean_financial_data = pd.read_csv('financial_data.csv/data')
-stocks_data = pd.read_csv('stock_data/data')
+clean_financial_data = pd.read_csv('financial_data_cleaned.csv/data')
+stocks_data = pd.read_csv('stock_data_cleaned.csv/data')
 ```
 
 ### Step 3. Start the Docker Stack
@@ -115,9 +131,10 @@ inventory-analysis/
 ├── proposal.pdf           ← Intial project proposal
 ├── workbook.twb           ← Tableau workbook
 ├── data/
-│   └── SP500.csv          ← Source CSV (do not modify)
-|   └── financial_data_v3  ← Data Acquired in capstone.ipynb 
-|   └── stock_data         ← Data Acquired in capstone.ipynb 
+│   └── SP500.csv                     ← Source CSV (do not modify)
+|   └── financial_data_uncleaned.csv  ← Data Acquired in capstone.ipynb
+|   └── financial_data_cleaned.csv    ← Data Acquired in capstone.ipynb
+|   └── stock_data_cleaned.csv        ← Data Acquired in capstone.ipynb 
 └── docker/
     └── docker-compose.yml ← Defines Postgres + Metabase containers
     └── .gitignore         ← Ignore local data 
